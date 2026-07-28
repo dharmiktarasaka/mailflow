@@ -103,6 +103,9 @@ export function getWebmailTransporter(overrideConfig = {}) {
       user,
       pass,
     },
+    connectionTimeout: 15000, // 15 seconds connection timeout
+    greetingTimeout: 10000,   // 10 seconds greeting timeout
+    socketTimeout: 30000,     // 30 seconds socket timeout
     tls: {
       rejectUnauthorized: false
     }
@@ -139,8 +142,15 @@ export async function sendWebmailEmail(account, to, subject, body, trackingPixel
       }
     }
 
-    const transporter = getWebmailTransporter({ user, pass })
-    const info = await transporter.sendMail(mailOptions)
+    let info
+    try {
+      const transporter = getWebmailTransporter({ user, pass })
+      info = await transporter.sendMail(mailOptions)
+    } catch (primaryErr) {
+      console.warn(`⚠️ Primary SMTP send on port 465 failed (${primaryErr.message}), trying fallback port 587 (STARTTLS)...`)
+      const fallbackTransporter = getWebmailTransporter({ user, pass, port: 587, secure: false })
+      info = await fallbackTransporter.sendMail(mailOptions)
+    }
 
     console.log('✓ Hostinger Webmail sent email successfully to:', to, '| Message-ID:', info.messageId)
 
