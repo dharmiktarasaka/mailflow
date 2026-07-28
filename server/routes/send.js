@@ -244,6 +244,7 @@ async function sendCampaignAsync(sessionId, campaign, account, drafts) {
       session.sent++
     } else {
       session.failed++
+      session.lastError = sendResult.error || 'Failed to send email'
       // Log failed send
       const event = new Event({
         lead_id: lead._id,

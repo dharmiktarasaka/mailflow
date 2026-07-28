@@ -468,6 +468,12 @@ export default function Drafts() {
                     <p className="text-sm text-slate-400 mt-2">Now sending: {sendProgress.current}</p>
                   )}
                 </div>
+                {(sendProgress.lastError || sendProgress.error) && (
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-left">
+                    <p className="text-xs font-semibold text-red-400">Error Details:</p>
+                    <p className="text-xs text-red-300 font-mono mt-1 leading-relaxed break-words">{sendProgress.lastError || sendProgress.error}</p>
+                  </div>
+                )}
                 <div className="w-full bg-slate-700 rounded-full h-2">
                   <div 
                     className="bg-green-500 h-2 rounded-full transition-all"
