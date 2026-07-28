@@ -1,0 +1,50 @@
+#!/bin/bash
+# Pre-commit hook to prevent committing sensitive files
+# Place this at: .git/hooks/pre-commit
+# Make it executable: chmod +x .git/hooks/pre-commit
+
+echo "🔍 Checking for sensitive files..."
+
+# Files that should NEVER be committed
+FORBIDDEN_FILES=(
+  ".env"
+  "mailflow.db"
+  "mailflow.db-shm"
+  "mailflow.db-wal"
+)
+
+EXIT_CODE=0
+
+for file in "${FORBIDDEN_FILES[@]}"; do
+  if git diff --cached --name-only | grep -E "^$file$" > /dev/null; then
+    echo "❌ ERROR: Attempting to commit sensitive file: $file"
+    EXIT_CODE=1
+  fi
+done
+
+# Check for API keys in staged code files
+if git diff --cached --name-only | grep -E "\.(js|json|ts|tsx|jsx)$" | while read file; do
+  if git diff --cached -- "$file" | grep -iE "ANTHROPIC_API_KEY|GOOGLE_CLIENT_SECRET|OUTLOOK_CLIENT_SECRET|sk-ant-|sk-|gsk_" > /dev/null; then
+    echo "❌ ERROR: Possible API key in staged file: $file"
+    EXIT_CODE=1
+  fi
+done; then
+  EXIT_CODE=1
+fi
+
+if [ $EXIT_CODE -eq 1 ]; then
+  echo ""
+  echo "⚠️  COMMIT BLOCKED - Sensitive files detected!"
+  echo ""
+  echo "Do NOT commit:"
+  echo "  • .env (Never commit your environment variables)"
+  echo "  • mailflow.db* (Never commit your database)"
+  echo "  • backups/ (Never commit backups)"
+  echo "  • API keys (Keep in .env only)"
+  echo ""
+  echo "To continue anyway (NOT RECOMMENDED): git commit --no-verify"
+  exit 1
+fi
+
+echo "✅ No sensitive files detected"
+exit 0

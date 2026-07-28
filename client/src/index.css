@@ -1,0 +1,382 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   LIGHT/DARK MODE — GLOBAL BASE STYLES
+   ============================================ */
+
+@layer base {
+  *, *::before, *::after {
+    border-color: theme('colors.slate.200');
+  }
+  html.dark *, html.dark *::before, html.dark *::after {
+    border-color: theme('colors.slate.800');
+  }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  /* === LIGHT MODE BODY === */
+  body {
+    @apply min-h-screen antialiased transition-colors duration-300;
+    background-color: #F0F4F8;
+    color: #1a202c;
+    background-image: 
+      radial-gradient(ellipse at top right, rgba(99, 102, 241, 0.06), transparent 600px),
+      radial-gradient(ellipse at bottom left, rgba(99, 102, 241, 0.03), transparent 600px);
+  }
+
+  /* === DARK MODE BODY === */
+  html.dark body {
+    background-color: #0B0F19;
+    color: #f1f5f9;
+    background-image: 
+      radial-gradient(ellipse at top right, rgba(99, 102, 241, 0.07), transparent 600px),
+      radial-gradient(ellipse at bottom left, rgba(11, 15, 25, 0.95), transparent 600px);
+    background-attachment: fixed;
+  }
+
+  /* === TEXT VISIBILITY — LIGHT MODE OVERRIDES === */
+  /* Force dark text on light background no matter what class is used */
+  html:not(.dark) h1, html:not(.dark) h2, html:not(.dark) h3,
+  html:not(.dark) h4, html:not(.dark) h5, html:not(.dark) h6 {
+    color: #0f172a !important;
+  }
+
+  html:not(.dark) p, html:not(.dark) span, html:not(.dark) label,
+  html:not(.dark) td, html:not(.dark) th, html:not(.dark) li,
+  html:not(.dark) div {
+    color: inherit;
+  }
+
+  /* Rescue hardcoded light-on-dark text classes in light mode */
+  html:not(.dark) .text-white { color: #0f172a !important; }
+  html:not(.dark) .text-slate-100 { color: #1e293b !important; }
+  html:not(.dark) .text-slate-200 { color: #1e293b !important; }
+  html:not(.dark) .text-slate-300 { color: #334155 !important; }
+  html:not(.dark) .text-slate-400 { color: #475569 !important; }
+  html:not(.dark) .text-slate-500 { color: #64748b !important; }
+
+  /* Rescue hardcoded dark backgrounds in light mode */
+  html:not(.dark) .bg-slate-900 {
+    background-color: #f8fafc !important;
+    color: #1e293b !important;
+  }
+  html:not(.dark) .bg-slate-800 {
+    background-color: #ffffff !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  html:not(.dark) .bg-slate-700 {
+    background-color: #f1f5f9 !important;
+    color: #334155 !important;
+  }
+  html:not(.dark) .bg-slate-700\/50,
+  html:not(.dark) .bg-slate-800\/50,
+  html:not(.dark) .bg-slate-800\/80,
+  html:not(.dark) .bg-slate-800\/60 {
+    background-color: rgba(255,255,255,0.9) !important;
+    color: #1e293b !important;
+    border-color: #e2e8f0 !important;
+  }
+  html:not(.dark) .border-slate-700,
+  html:not(.dark) .border-slate-600 {
+    border-color: #cbd5e1 !important;
+  }
+}
+
+/* ============================================
+   KEYFRAME ANIMATIONS
+   ============================================ */
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes backdropFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.15); }
+  50% { box-shadow: 0 0 0 8px rgba(99, 102, 241, 0); }
+}
+
+/* ============================================
+   COMPONENT CLASSES
+   ============================================ */
+
+@layer components {
+
+  /* --- BUTTONS --- */
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center gap-2;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn:hover  { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0px); box-shadow: none; }
+
+  .btn-primary {
+    @apply bg-indigo-600 text-white font-semibold;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+  .btn-primary:hover {
+    @apply bg-indigo-500;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  }
+
+  .btn-secondary {
+    @apply bg-white text-slate-700 border border-slate-200 shadow-sm;
+  }
+  html.dark .btn-secondary {
+    background-color: rgba(19, 26, 43, 0.8);
+    color: #e2e8f0;
+    border-color: rgba(51, 65, 85, 0.5);
+  }
+  .btn-secondary:hover {
+    @apply bg-slate-50 border-slate-300;
+  }
+  html.dark .btn-secondary:hover {
+    background-color: rgba(26, 35, 58, 0.8);
+  }
+
+  .btn-success {
+    @apply bg-emerald-600 hover:bg-emerald-500 text-white font-semibold;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  }
+  .btn-danger {
+    @apply bg-rose-600 hover:bg-rose-500 text-white font-semibold;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+  }
+
+  /* --- CARDS --- */
+  .card {
+    @apply rounded-xl p-6 border;
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  html.dark .card {
+    background-color: rgba(19, 26, 43, 0.6);
+    border-color: rgba(30, 41, 59, 0.8);
+    box-shadow: none;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  html.dark .card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 10px 40px rgba(99, 102, 241, 0.1);
+  }
+
+  /* --- INPUTS --- */
+  .input {
+    @apply w-full px-4 py-2.5 rounded-lg border text-slate-900 placeholder-slate-400;
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  }
+  html.dark .input {
+    background-color: rgba(11, 15, 25, 0.6);
+    border-color: #1e293b;
+    color: #f1f5f9;
+  }
+  html.dark .input::placeholder { color: #475569; }
+  html.dark .input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+  }
+
+  /* --- STAT CARDS --- */
+  .stat-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    border-color: #e2e8f0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 4px 20px rgba(99,102,241,0.04);
+  }
+  html.dark .stat-card {
+    background: linear-gradient(135deg, rgba(30,41,59,0.6) 0%, rgba(19,26,43,0.8) 100%);
+    border-color: rgba(51, 65, 85, 0.5);
+  }
+
+  .stat-label {
+    color: #64748b;
+  }
+  html.dark .stat-label {
+    color: #94a3b8;
+  }
+
+  .stat-value {
+    color: #0f172a;
+  }
+  html.dark .stat-value {
+    color: #f1f5f9;
+  }
+
+  .stat-icon {
+    background-color: rgba(99, 102, 241, 0.08);
+  }
+  html.dark .stat-icon {
+    background-color: rgba(99, 102, 241, 0.15);
+  }
+}
+
+/* ============================================
+   TABLE ROW HOVER
+   ============================================ */
+tbody tr {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+tbody tr:hover {
+  background-color: rgba(99, 102, 241, 0.04);
+}
+html.dark tbody tr:hover {
+  background-color: rgba(19, 26, 43, 0.7);
+}
+
+/* ============================================
+   LIGHT MODE GLOBAL RESCUE RULES
+   Fixes hardcoded dark-mode classes in all pages
+   ============================================ */
+
+/* Text colors */
+html:not(.dark) .text-white         { color: #0f172a !important; }
+html:not(.dark) .text-slate-100     { color: #1e293b !important; }
+html:not(.dark) .text-slate-200     { color: #1e293b !important; }
+html:not(.dark) .text-slate-300     { color: #334155 !important; }
+html:not(.dark) .text-slate-400     { color: #64748b !important; }
+html:not(.dark) .text-slate-500     { color: #64748b !important; }
+
+/* Keep accent colors vivid in light mode */
+html:not(.dark) .text-green-400     { color: #16a34a !important; }
+html:not(.dark) .text-green-300     { color: #15803d !important; }
+html:not(.dark) .text-amber-300     { color: #b45309 !important; }
+html:not(.dark) .text-amber-400     { color: #d97706 !important; }
+html:not(.dark) .text-red-400       { color: #dc2626 !important; }
+html:not(.dark) .text-indigo-400    { color: #4338ca !important; }
+
+/* Background rescues */
+html:not(.dark) .bg-slate-900       { background-color: #f8fafc !important; color: #1e293b !important; }
+html:not(.dark) .bg-slate-800       { background-color: #ffffff !important; color: #1e293b !important; }
+html:not(.dark) .bg-slate-700       { background-color: #f1f5f9 !important; color: #334155 !important; }
+html:not(.dark) .bg-slate-700\/30,
+html:not(.dark) .bg-slate-700\/50   { background-color: rgba(241,245,249,0.9) !important; color: #334155 !important; }
+html:not(.dark) .bg-slate-800\/50,
+html:not(.dark) .bg-slate-800\/60,
+html:not(.dark) .bg-slate-800\/80   { background-color: rgba(255,255,255,0.9) !important; color: #1e293b !important; }
+
+/* Border rescues */
+html:not(.dark) .border-slate-700   { border-color: #e2e8f0 !important; }
+html:not(.dark) .border-slate-600   { border-color: #cbd5e1 !important; }
+html:not(.dark) .border-slate-800   { border-color: #e2e8f0 !important; }
+
+/* Table row hover */
+html:not(.dark) .hover\:bg-slate-700\/30:hover { background-color: rgba(99,102,241,0.05) !important; }
+
+/* Select / input elements */
+html:not(.dark) select {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+html:not(.dark) input:not([type="checkbox"]):not([type="radio"]) {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+html:not(.dark) input::placeholder { color: #94a3b8 !important; }
+
+/* ============================================
+   BUTTON COLORS — MODE SPECIFIC
+   Light Mode: Professional Blue
+   Dark Mode:  Brand Green #91c63a
+   ============================================ */
+
+/* === LIGHT MODE: Blue buttons === */
+html:not(.dark) .bg-indigo-500:not([class*="\/10"]):not([class*="\/20"]):not([class*="\/30"]) {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+html:not(.dark) .bg-indigo-500:not([class*="\/10"]):not([class*="\/20"]):not([class*="\/30"]):hover,
+html:not(.dark) .hover\:bg-indigo-600:hover {
+  background-color: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+html:not(.dark) .btn-primary {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3) !important;
+}
+html:not(.dark) .btn-primary:hover {
+  background-color: #1d4ed8 !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4) !important;
+}
+
+/* === DARK MODE: Brand Green #91c63a buttons === */
+html.dark .bg-indigo-500:not([class*="\/10"]):not([class*="\/20"]):not([class*="\/30"]) {
+  background-color: #91c63a !important;
+  color: #1a2e0a !important;
+}
+html.dark .bg-indigo-500:not([class*="\/10"]):not([class*="\/20"]):not([class*="\/30"]):hover,
+html.dark .hover\:bg-indigo-600:hover {
+  background-color: #7daa2f !important;
+}
+html.dark .btn-primary {
+  background-color: #91c63a !important;
+  color: #1a2e0a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(145, 198, 58, 0.35) !important;
+}
+html.dark .btn-primary:hover {
+  background-color: #7daa2f !important;
+  box-shadow: 0 6px 20px rgba(145, 198, 58, 0.45) !important;
+}
+
+/* Keep tinted badges as-is in both modes */
+.bg-indigo-500\/10,
+.bg-indigo-500\/20,
+.bg-indigo-500\/30 {
+  background-color: initial !important;
+}
+
+/* ============================================
+   LOCK SCREEN ANIMATIONS
+   ============================================ */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
