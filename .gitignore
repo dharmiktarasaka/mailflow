@@ -17,6 +17,7 @@ backups/
 .env.production
 .env.staging
 .env.development
+.env.example
 
 # Build outputs
 dist/

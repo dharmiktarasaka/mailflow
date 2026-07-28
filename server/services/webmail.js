@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer'
 import { Account } from '../db/models.js'
+import { buildEmailHtml } from './emailTemplate.js'
 
 /**
  * Get active account from DB or auto-fallback to Hostinger Webmail from .env
@@ -120,15 +121,7 @@ export async function sendWebmailEmail(account, to, subject, body, trackingPixel
 
     console.log(`📧 Attempting to send email via SMTP using account: ${user}`)
     
-    let htmlBody = body.replace(/\n/g, '<br>')
-
-    if (imageUrl) {
-      htmlBody += `<br><br><img src="${imageUrl}" alt="Attachment Image" style="max-width: 100%; height: auto; border-radius: 8px;" />`
-    }
-
-    if (trackingPixel) {
-      htmlBody += `<img src="${trackingPixel}" width="1" height="1" style="display:none;" />`
-    }
+    const htmlBody = buildEmailHtml(body, { imageUrl, trackingPixel })
 
     const mailOptions = {
       from: fromAddress,

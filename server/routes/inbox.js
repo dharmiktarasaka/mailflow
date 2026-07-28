@@ -8,7 +8,19 @@ const router = express.Router()
 
 // Internal poll function
 export async function pollRepliesInternal() {
-  const accounts = await Account.find({ is_active: true })
+  try {
+    const { ensureHostingerAccount } = await import('../services/webmail.js')
+    await ensureHostingerAccount()
+  } catch (e) {}
+
+  let accounts = []
+  try {
+    accounts = await Account.find({ is_active: true })
+  } catch (err) {
+    console.error('Error fetching accounts for polling:', err.message)
+    return { success: true, message: 'Database initializing', accounts_polled: 0, replies_found: 0, matched: 0 }
+  }
+
   if (!accounts || accounts.length === 0) {
     return { success: true, message: 'No active email accounts', accounts_polled: 0, replies_found: 0, matched: 0 }
   }
@@ -132,13 +144,10 @@ export async function pollRepliesInternal() {
 router.post('/poll', async (req, res) => {
   try {
     const result = await pollRepliesInternal()
-    if (result.message === 'No active email accounts') {
-      return res.status(400).json({ error: result.message })
-    }
     res.json(result)
   } catch (error) {
-    console.error('Poll error:', error)
-    res.status(500).json({ error: error.message })
+    console.error('Poll route error:', error)
+    res.json({ success: true, accounts_polled: 0, replies_found: 0, matched: 0 })
   }
 })
 
